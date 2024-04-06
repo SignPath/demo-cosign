@@ -31,8 +31,37 @@ jobs:
           build_args: image_tag=${{ env.IMAGE_TAG }}
           tags: ${{ vars.IMAGE_FQN }}:${{ env.IMAGE_TAG }},${{ vars.IMAGE_FQN }}:latest
       
-      #- name: Sign Container Image
-      #  run: ./sign.ps1
+      - name: Create metadata file
+        env:
+          IMAGE_FQN: ${{ vars.IMAGE_FQN }}
+        run: ./create-metdata-file.sh
 
-      #- name: Verify Signature
-      #  run: ./verify.ps1
+      - name: upload-unsigned-artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "unsigned-metadata" 
+          path: "./payload.json"
+          if-no-files-found: error
+
+      - name: Sign metadata file
+        id: sign-step
+        uses: SignPath/github-actions/actions/submit-signing-request@v0.1
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '${{ vars.SIGNPATH_ORGANIZATION_ID }}'
+          project-slug: '${{ vars.SIGNPATH_PROJECT_SLUG }}'
+          signing-policy-slug: '${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}'
+          artifact-configuration-slug: '${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}'
+          artifact-name: "unsigned-metadata"
+          signed-artifact-destination-path: "signed-metadata.zip"
+
+      - name: Attach signature to image
+        run: ./attach-signature.sh
+
+      - name: Verify signature
+        env:
+          SIGNPATH_API_TOKEN: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          SIGNPATH_ORGANIZATION_ID: '${{ vars.SIGNPATH_ORGANIZATION_ID }}'
+          SIGNING_REQUEST_ID: '${{ steps.sign-step.outputs.signing-request-id }}'
+        run: ./verify.sh
