@@ -1,0 +1,38 @@
+name: Build & Sign Container Image using Sigstore Cosign
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build_sign_and_deploy:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Generate Image Tag
+        run: echo "IMAGE_TAG=$(date +'%Y-%m-%d').$GITHUB_RUN_ID" >> $GITHUB_ENV && cat $GITHUB_ENV
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:src"
+          push: true
+          build_args: image_tag=${{ env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_TAG }},latest
+      
+      #- name: Sign Container Image
+      #  run: ./sign.ps1
+
+      #- name: Verify Signature
+      #  run: ./verify.ps1
