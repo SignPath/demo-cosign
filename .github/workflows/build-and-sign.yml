@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: "unsigned-metadata" 
-          path: "./payload.json"
+          path: "./payload.json.zip"
           if-no-files-found: error
 
       - name: Sign metadata file
