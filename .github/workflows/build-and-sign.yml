@@ -34,7 +34,7 @@ jobs:
       - name: Create metadata file
         env:
           IMAGE_FQN: ${{ vars.IMAGE_FQN }}
-        run: ./create-metdata-file.sh
+        run: ./create-metadata-file.sh
 
       - name: upload-unsigned-artifact
         uses: actions/upload-artifact@v3
