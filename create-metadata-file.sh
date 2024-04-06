@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Extracting the repository digest identifier for the given FQN"
 export IMAGE_DIGEST=`docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_FQN:$IMAGE_TAG"`
 

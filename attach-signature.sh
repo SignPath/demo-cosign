@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Extract the detached signature"
 unzip -n signed-metadata.zip
 
