@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
       
       - name: Generate Image Tag
-        run: echo "IMAGE_TAG=$(date +'%Y-%m-%d').$GITHUB_RUN_ID" >> $GITHUB_ENV && cat $GITHUB_ENV
+        run: echo "IMAGE_TAG=$(date +'%Y-%m-%d').$GITHUB_RUN_ID" >> $GITHUB_ENV
       
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -29,7 +29,7 @@ jobs:
           context: "{{defaultContext}}:src"
           push: true
           build_args: image_tag=${{ env.IMAGE_TAG }}
-          tags: ${{ env.IMAGE_TAG }},latest
+          tags: ${{ vars.IMAGE_FQN }}:${{ env.IMAGE_TAG }},${{ vars.IMAGE_FQN }}:latest
       
       #- name: Sign Container Image
       #  run: ./sign.ps1
