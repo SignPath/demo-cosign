@@ -4,6 +4,8 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
+  schedule:
+    - cron:  '30 4 * * *' # every day at 4:30am UTC
 
 jobs:
   build_sign_and_deploy:
