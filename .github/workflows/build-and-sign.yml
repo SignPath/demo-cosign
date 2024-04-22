@@ -12,7 +12,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
@@ -39,15 +39,15 @@ jobs:
         run: ./create-metadata-file.sh
 
       - name: upload-unsigned-artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "unsigned-metadata" 
-          path: "./payload.json.zip"
+          path: "./payload.json"
           if-no-files-found: error
 
       - name: Sign metadata file
         id: sign-step
-        uses: SignPath/github-actions/actions/submit-signing-request@v0.1
+        uses: SignPath/github-action-submit-signing-request@v0.3
         with:
           github-token: '${{ secrets.GITHUB_TOKEN }}'
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
@@ -56,7 +56,7 @@ jobs:
           signing-policy-slug: '${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}'
           artifact-configuration-slug: '${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}'
           artifact-name: "unsigned-metadata"
-          signed-artifact-destination-path: "signed-metadata.zip"
+          signed-artifact-destination-path: "signed-metadata"
 
       - name: Attach signature to image
         run: ./attach-signature.sh
