@@ -49,14 +49,13 @@ jobs:
         id: sign-step
         uses: SignPath/github-action-submit-signing-request@v0.3
         with:
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           organization-id: '${{ vars.SIGNPATH_ORGANIZATION_ID }}'
           project-slug: '${{ vars.SIGNPATH_PROJECT_SLUG }}'
           signing-policy-slug: '${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}'
           artifact-configuration-slug: '${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}'
-          artifact-name: "unsigned-metadata"
-          signed-artifact-destination-path: "signed-metadata"
+          github-artifact-name: "unsigned-metadata"
+          output-artifact-directory: "signed-metadata"
 
       - name: Attach signature to image
         run: ./attach-signature.sh
